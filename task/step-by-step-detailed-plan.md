@@ -48,11 +48,13 @@ bun run db:start
 ## Step 2: Install Dependencies
 
 ```bash
-bun add ioredis
-bun add @types/ioredis -D
+cd packages/api
+bun add ioredis ms
+bun add @types/ioredis @types/ms -D
 ```
 
 Using ioredis (not Bun.redis) for better stability with external Redis.
+Using ms for readable time duration handling.
 
 ---
 
@@ -220,12 +222,13 @@ export async function fetchWeather(location: string): Promise<WeatherData> {
 ```typescript
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import ms from "ms";
 
 import { publicProcedure, router } from "../index";
 import { getCached, setCached, getRedisClient } from "../lib/redis";
 import { fetchWeather } from "../lib/weather";
 
-const CACHE_TTL_SECONDS = 12 * 60 * 60; // 12 hours
+const CACHE_TTL_SECONDS = ms("12h") / 1000; // 12 hours (ms returns milliseconds, Redis wants seconds)
 
 function getCacheKey(location: string): string {
   return `weather:${location.toLowerCase().trim()}`;
@@ -236,7 +239,7 @@ async function checkRateLimit(identifier: string): Promise<void> {
   const client = getRedisClient();
   const key = `ratelimit:weather:${identifier}`;
   const limit = 100; // requests per hour
-  const window = 3600; // 1 hour in seconds
+  const window = ms("1h") / 1000; // 1 hour in seconds
 
   try {
     const current = await client.incr(key);
@@ -412,7 +415,7 @@ docker exec -it 02-weather-api-redis redis-cli
 
 **Cache strategy:**
 - Key format: `weather:{normalized_location}` (lowercase, trimmed)
-- TTL: 12 hours (43200 seconds)
+- TTL: 12 hours (using ms('12h') / 1000)
 - Fire-and-forget cache writes (don't await setCached)
 
 ---
