@@ -31,11 +31,7 @@ export async function getCached<T>(key: string): Promise<T | null> {
   }
 }
 
-export async function setCached(
-  key: string,
-  value: unknown,
-  ttlSeconds: number
-): Promise<void> {
+export async function setCached(key: string, value: unknown, ttlSeconds: number): Promise<void> {
   try {
     const client = getRedisClient();
     await client.setex(key, ttlSeconds, JSON.stringify(value));

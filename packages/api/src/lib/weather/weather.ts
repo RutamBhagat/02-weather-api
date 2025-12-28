@@ -6,9 +6,7 @@ import { AxiosError } from "axios";
 import ms from "ms";
 
 export async function fetchWeather(location: string): Promise<WeatherData> {
-  const url = new URL(
-    `${env.WEATHER_API_BASE_URL}/${encodeURIComponent(location)}`
-  );
+  const url = new URL(`${env.WEATHER_API_BASE_URL}/${encodeURIComponent(location)}`);
   url.searchParams.set("key", env.WEATHER_API_KEY);
   url.searchParams.set("unitGroup", "metric");
   url.searchParams.set("include", "current");

@@ -3,6 +3,7 @@
 Build tRPC weather API with Redis caching using Bun runtime.
 
 ## Overview
+
 - Fetch weather from Visual Crossing API
 - Cache in Redis with 12hr TTL
 - Test with Postman (no frontend)
@@ -15,6 +16,7 @@ Build tRPC weather API with Redis caching using Bun runtime.
 **File:** `packages/db/docker-compose.yml`
 
 Add Redis service:
+
 ```yaml
 redis:
   image: redis:7-alpine
@@ -32,12 +34,14 @@ redis:
 ```
 
 Add volume:
+
 ```yaml
 volumes:
   02-weather-api_redis_data:
 ```
 
 Restart containers:
+
 ```bash
 bun run db:down
 bun run db:start
@@ -64,6 +68,7 @@ Using axios for HTTP requests with better error handling.
 **File:** `apps/server/.env.example`
 
 Add:
+
 ```env
 REDIS_URL=redis://localhost:6379
 WEATHER_API_KEY=
@@ -73,6 +78,7 @@ WEATHER_API_BASE_URL=https://weather.visualcrossing.com/VisualCrossingWebService
 **File:** `packages/env/src/server.ts`
 
 Update server schema (after line 11):
+
 ```typescript
 REDIS_URL: z.string().url(),
 WEATHER_API_KEY: z.string().min(1),
@@ -292,6 +298,7 @@ export const weatherRouter = router({
 ```
 
 **Rate limiting:**
+
 - 100 requests per hour per IP
 - Uses Redis INCR with TTL
 - Key format: `ratelimit:weather:{ip}`
@@ -307,11 +314,13 @@ export const weatherRouter = router({
 **File:** `packages/api/src/routers/index.ts`
 
 Add import:
+
 ```typescript
 import { weatherRouter } from "./weather";
 ```
 
 Add to router (line 14):
+
 ```typescript
 export const appRouter = router({
   healthCheck: publicProcedure.query(() => "OK"),
@@ -329,6 +338,7 @@ export const appRouter = router({
 ## Step 8: Testing with curl
 
 **Start server:**
+
 ```bash
 bun run dev
 ```
@@ -336,18 +346,23 @@ bun run dev
 **Test endpoints:**
 
 1. **Get weather (cache miss):**
+
    ```bash
    curl "http://localhost:3000/trpc/weather.getCurrent?input=%7B%22location%22%3A%22London%22%7D"
    ```
+
    Response includes `fromCache: false`
 
 2. **Get weather again (cache hit):**
+
    ```bash
    curl "http://localhost:3000/trpc/weather.getCurrent?input=%7B%22location%22%3A%22London%22%7D"
    ```
+
    Response includes `fromCache: true`
 
 3. **Clear cache:**
+
    ```bash
    curl -X POST "http://localhost:3000/trpc/weather.clearCache" \
      -H "Content-Type: application/json" \
@@ -361,6 +376,7 @@ bun run dev
    Expect 400 error
 
 **Verify Redis:**
+
 ```bash
 docker exec -it 02-weather-api-redis redis-cli
 > KEYS weather:*
@@ -373,11 +389,13 @@ docker exec -it 02-weather-api-redis redis-cli
 ## Critical Files
 
 **Create:**
+
 - `packages/api/src/lib/redis.ts` - Redis client + helpers
 - `packages/api/src/lib/weather/weather.ts` - Weather service (types already exist at types.ts)
 - `packages/api/src/routers/weather.ts` - tRPC router
 
 **Modify:**
+
 - `packages/db/docker-compose.yml` - Add Redis service
 - `packages/env/src/server.ts` - Add env validation
 - `packages/api/src/routers/index.ts` - Wire weather router
@@ -389,17 +407,20 @@ docker exec -it 02-weather-api-redis redis-cli
 ## Error Handling Strategy
 
 **Redis failures:**
+
 - Never throw from getCached/setCached
 - Log errors, return null
 - API works without cache (graceful degradation)
 
 **Weather API failures:**
+
 - 400 → TRPCError BAD_REQUEST (invalid location)
 - 401 → TRPCError INTERNAL_SERVER_ERROR (auth issue)
 - Timeout (10s) → TRPCError INTERNAL_SERVER_ERROR
 - Network errors → Wrapped in TRPCError
 
 **Cache strategy:**
+
 - Key format: `weather:{normalized_location}` (lowercase, trimmed)
 - TTL: 12 hours (using ms('12h') / 1000)
 - Fire-and-forget cache writes (don't await setCached)
