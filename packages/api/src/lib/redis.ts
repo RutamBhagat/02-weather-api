@@ -43,3 +43,12 @@ export async function setCached(
     console.error("Redis SET error:", error);
   }
 }
+
+export async function delCached(key: string): Promise<void> {
+  try {
+    const client = getRedisClient();
+    await client.del(key);
+  } catch (error) {
+    console.error("Redis DEL error:", error);
+  }
+}
