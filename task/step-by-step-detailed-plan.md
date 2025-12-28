@@ -49,12 +49,13 @@ bun run db:start
 
 ```bash
 cd packages/api
-bun add ioredis ms
+bun add ioredis ms axios
 bun add @types/ioredis @types/ms -D
 ```
 
 Using ioredis (not Bun.redis) for better stability with external Redis.
 Using ms for readable time duration handling.
+Using axios for HTTP requests with better error handling.
 
 ---
 
@@ -140,67 +141,49 @@ export async function setCached(
 
 ## Step 5: Weather Service
 
-**Create:** `packages/api/src/lib/weather.ts`
+**Create:** `packages/api/src/lib/weather/weather.ts`
 
 ```typescript
 import { env } from "@02-weather-api/env/server";
 import { TRPCError } from "@trpc/server";
-
-export type WeatherData = {
-  location: string;
-  temperature: number;
-  conditions: string;
-  humidity: number;
-  windSpeed: number;
-  description: string;
-  queryCost: number;
-  latitude: number;
-  longitude: number;
-};
+import axios, { AxiosError } from "axios";
+import type { WeatherData } from "./types";
 
 export async function fetchWeather(location: string): Promise<WeatherData> {
-  const url = `${env.WEATHER_API_BASE_URL}/${encodeURIComponent(location)}?key=${env.WEATHER_API_KEY}&unitGroup=metric&include=current`;
+  const url = `${env.WEATHER_API_BASE_URL}/${encodeURIComponent(location)}`;
 
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(10000), // 10s timeout
+    const { data } = await axios.get<WeatherData>(url, {
+      params: {
+        key: env.WEATHER_API_KEY,
+        unitGroup: "metric",
+        include: "current",
+      },
+      timeout: 10000, // 10s timeout
     });
 
-    if (!response.ok) {
-      if (response.status === 400) {
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      if (error.response?.status === 400) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Invalid location provided",
         });
       }
-      if (response.status === 401) {
+      if (error.response?.status === 401) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Weather API authentication failed",
         });
       }
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Weather API request failed",
-      });
+      if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Weather API request timed out",
+        });
+      }
     }
-
-    const data = await response.json();
-    const current = data.currentConditions;
-
-    return {
-      location: data.resolvedAddress,
-      temperature: current.temp,
-      conditions: current.conditions,
-      humidity: current.humidity,
-      windSpeed: current.windspeed,
-      description: data.description,
-      queryCost: data.queryCost,
-      latitude: data.latitude,
-      longitude: data.longitude,
-    };
-  } catch (error) {
-    if (error instanceof TRPCError) throw error;
 
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
@@ -211,7 +194,9 @@ export async function fetchWeather(location: string): Promise<WeatherData> {
 }
 ```
 
-**Pattern:** Follow todo.ts error handling (TRPCError with codes).
+**Types exist at:** `packages/api/src/lib/weather/types.ts` (already created with WeatherData, CurrentConditions, Day, etc.)
+
+**Pattern:** Follow todo.ts error handling (TRPCError with codes). Using axios for better error handling and request cancellation.
 
 ---
 
@@ -226,7 +211,7 @@ import ms from "ms";
 
 import { publicProcedure, router } from "../index";
 import { getCached, setCached, getRedisClient } from "../lib/redis";
-import { fetchWeather } from "../lib/weather";
+import { fetchWeather } from "../lib/weather/weather";
 
 const CACHE_TTL_SECONDS = ms("12h") / 1000; // 12 hours (ms returns milliseconds, Redis wants seconds)
 
@@ -388,7 +373,7 @@ docker exec -it 02-weather-api-redis redis-cli
 
 **Create:**
 - `packages/api/src/lib/redis.ts` - Redis client + helpers
-- `packages/api/src/lib/weather.ts` - Weather service
+- `packages/api/src/lib/weather/weather.ts` - Weather service (types already exist at types.ts)
 - `packages/api/src/routers/weather.ts` - tRPC router
 
 **Modify:**

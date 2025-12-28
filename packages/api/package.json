@@ -18,6 +18,7 @@
     "@trpc/client": "^11.7.2",
     "@trpc/server": "catalog:",
     "@types/ms": "^2.1.0",
+    "axios": "^1.13.2",
     "dotenv": "catalog:",
     "hono": "catalog:",
     "ioredis": "^5.8.2",
