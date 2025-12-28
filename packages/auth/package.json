@@ -10,15 +10,15 @@
     }
   },
   "scripts": {},
-  "devDependencies": {
-    "typescript": "catalog:",
-    "@02-weather-api/config": "workspace:*"
-  },
   "dependencies": {
+    "@02-weather-api/db": "workspace:*",
+    "@02-weather-api/env": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@02-weather-api/env": "workspace:*",
-    "@02-weather-api/db": "workspace:*"
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@02-weather-api/config": "workspace:*",
+    "typescript": "catalog:"
   }
 }

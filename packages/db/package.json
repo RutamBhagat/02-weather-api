@@ -19,18 +19,18 @@
     "db:stop": "docker compose stop",
     "db:down": "docker compose down"
   },
-  "devDependencies": {
-    "prisma": "^7.1.0",
-    "@types/pg": "^8.15.6",
-    "typescript": "catalog:",
-    "@02-weather-api/config": "workspace:*"
-  },
   "dependencies": {
-    "@prisma/client": "catalog:",
+    "@02-weather-api/env": "workspace:*",
     "@prisma/adapter-pg": "^7.1.0",
-    "pg": "^8.16.3",
+    "@prisma/client": "catalog:",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@02-weather-api/env": "workspace:*"
+    "pg": "^8.16.3",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@02-weather-api/config": "workspace:*",
+    "@types/pg": "^8.15.6",
+    "prisma": "^7.1.0",
+    "typescript": "catalog:"
   }
 }

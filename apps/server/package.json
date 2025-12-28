@@ -10,23 +10,23 @@
     "start": "bun run dist/index.js"
   },
   "dependencies": {
-    "hono": "catalog:",
-    "@trpc/server": "catalog:",
-    "@hono/trpc-server": "^0.4.0",
-    "better-auth": "catalog:",
-    "ai": "^5.0.49",
-    "@ai-sdk/google": "^2.0.51",
-    "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@02-weather-api/env": "workspace:*",
     "@02-weather-api/api": "workspace:*",
     "@02-weather-api/auth": "workspace:*",
-    "@02-weather-api/db": "workspace:*"
+    "@02-weather-api/db": "workspace:*",
+    "@02-weather-api/env": "workspace:*",
+    "@ai-sdk/google": "^2.0.51",
+    "@hono/trpc-server": "^0.4.0",
+    "@trpc/server": "catalog:",
+    "ai": "^5.0.49",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
+    "@02-weather-api/config": "workspace:*",
     "@types/bun": "catalog:",
-    "typescript": "catalog:",
     "tsdown": "^0.16.5",
-    "@02-weather-api/config": "workspace:*"
+    "typescript": "catalog:"
   }
 }

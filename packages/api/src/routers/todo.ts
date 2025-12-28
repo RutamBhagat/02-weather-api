@@ -31,7 +31,7 @@ export const todoRouter = router({
           where: { id: input.id },
           data: { completed: input.completed },
         });
-      } catch (error) {
+      } catch {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Todo not found",
@@ -44,7 +44,7 @@ export const todoRouter = router({
       return await prisma.todo.delete({
         where: { id: input.id },
       });
-    } catch (error) {
+    } catch {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Todo not found",

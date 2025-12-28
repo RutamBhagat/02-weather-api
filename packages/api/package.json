@@ -10,19 +10,19 @@
     }
   },
   "scripts": {},
-  "devDependencies": {
-    "typescript": "catalog:",
-    "@02-weather-api/config": "workspace:*"
-  },
   "dependencies": {
-    "@trpc/server": "catalog:",
-    "@trpc/client": "^11.7.2",
-    "hono": "catalog:",
-    "@prisma/client": "catalog:",
-    "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@02-weather-api/env": "workspace:*",
     "@02-weather-api/auth": "workspace:*",
-    "@02-weather-api/db": "workspace:*"
+    "@02-weather-api/db": "workspace:*",
+    "@02-weather-api/env": "workspace:*",
+    "@prisma/client": "catalog:",
+    "@trpc/client": "^11.7.2",
+    "@trpc/server": "catalog:",
+    "dotenv": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@02-weather-api/config": "workspace:*",
+    "typescript": "catalog:"
   }
 }

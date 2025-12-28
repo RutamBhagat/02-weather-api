@@ -10,19 +10,13 @@
   "backend": "hono",
   "runtime": "bun",
   "frontend": [],
-  "addons": [
-    "oxlint",
-    "turborepo"
-  ],
-  "examples": [
-    "ai",
-    "todo"
-  ],
+  "addons": ["oxlint", "turborepo"],
+  "examples": ["ai", "todo"],
   "auth": "better-auth",
   "payments": "none",
   "packageManager": "bun",
   "dbSetup": "docker",
   "api": "trpc",
   "webDeploy": "none",
-  "serverDeploy": "none"
+  "serverDeploy": "none",
 }
