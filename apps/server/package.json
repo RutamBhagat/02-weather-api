@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc -b",
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run dist/index.js"
+  },
+  "dependencies": {
+    "hono": "catalog:",
+    "@trpc/server": "catalog:",
+    "@hono/trpc-server": "^0.4.0",
+    "better-auth": "catalog:",
+    "ai": "^5.0.49",
+    "@ai-sdk/google": "^2.0.51",
+    "dotenv": "catalog:",
+    "zod": "catalog:",
+    "@02-weather-api/env": "workspace:*",
+    "@02-weather-api/api": "workspace:*",
+    "@02-weather-api/auth": "workspace:*",
+    "@02-weather-api/db": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:",
+    "tsdown": "^0.16.5",
+    "@02-weather-api/config": "workspace:*"
+  }
+}

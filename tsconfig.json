@@ -1,0 +1,3 @@
+{
+  "extends": "@02-weather-api/config/tsconfig.base.json"
+}

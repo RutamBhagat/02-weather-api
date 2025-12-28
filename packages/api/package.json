@@ -1,0 +1,28 @@
+{
+  "name": "@02-weather-api/api",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@02-weather-api/config": "workspace:*"
+  },
+  "dependencies": {
+    "@trpc/server": "catalog:",
+    "@trpc/client": "^11.7.2",
+    "hono": "catalog:",
+    "@prisma/client": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:",
+    "@02-weather-api/env": "workspace:*",
+    "@02-weather-api/auth": "workspace:*",
+    "@02-weather-api/db": "workspace:*"
+  }
+}
