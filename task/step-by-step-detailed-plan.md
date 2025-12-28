@@ -326,36 +326,37 @@ export const appRouter = router({
 
 ---
 
-## Step 8: Testing with Postman
+## Step 8: Testing with curl
 
 **Start server:**
 ```bash
 bun run dev
 ```
 
-**Endpoints:**
+**Test endpoints:**
 
 1. **Get weather (cache miss):**
-   ```
-   GET http://localhost:3000/trpc/weather.getCurrent?input={"location":"London"}
+   ```bash
+   curl "http://localhost:3000/trpc/weather.getCurrent?input=%7B%22location%22%3A%22London%22%7D"
    ```
    Response includes `fromCache: false`
 
 2. **Get weather again (cache hit):**
-   ```
-   GET http://localhost:3000/trpc/weather.getCurrent?input={"location":"London"}
+   ```bash
+   curl "http://localhost:3000/trpc/weather.getCurrent?input=%7B%22location%22%3A%22London%22%7D"
    ```
    Response includes `fromCache: true`
 
 3. **Clear cache:**
-   ```
-   POST http://localhost:3000/trpc/weather.clearCache
-   Body: {"location":"London"}
+   ```bash
+   curl -X POST "http://localhost:3000/trpc/weather.clearCache" \
+     -H "Content-Type: application/json" \
+     -d '{"location":"London"}'
    ```
 
 4. **Test error (invalid location):**
-   ```
-   GET http://localhost:3000/trpc/weather.getCurrent?input={"location":"InvalidCity12345"}
+   ```bash
+   curl "http://localhost:3000/trpc/weather.getCurrent?input=%7B%22location%22%3A%22InvalidCity12345%22%7D"
    ```
    Expect 400 error
 
